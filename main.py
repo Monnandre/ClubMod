@@ -86,40 +86,6 @@ async def on_ready():
     await bot.get_cog('bs_cog').init_bot()
 
 @bot.event
-async def on_guild_join(guild):
-    with open('guilds.json', 'r') as f:
-        guilds = json.load(f)
-
-    guilds[str(guild.id)] = {}
-    guilds[str(guild.id)]["prefix"] = '>'
-
-    with open('guilds.json', 'w') as f:
-        json.dump(guilds, f, indent=4)
-
-@bot.event
-async def on_guild_remove(guild):
-    with open('guilds.json', 'r') as f:
-        guilds = json.load(f)
-
-    guilds.pop(str(guild.id))
-
-    with open('guilds.json', 'w') as f:
-        json.dump(guilds, f, indent=4)
-
-@bot.command(pass_context=True)
-@commands.has_permissions(administrator=True)
-async def changeprefix(ctx, prefix):
-    with open('guilds.json', 'r') as f:
-        guilds = json.load(f)
-
-    guilds[str(ctx.guild.id)]["prefix"] = prefix
-
-    with open('guilds.json', 'w') as f:
-        json.dump(guilds, f, indent=4)
-
-    await ctx.send(f'Prefix changed to: {prefix}')
-
-@bot.event
 async def on_command_error(ctx, exc):
     response = ""
     if isinstance(exc, commands.CommandNotFound):
@@ -133,10 +99,5 @@ async def on_command_error(ctx, exc):
         msg = await ctx.channel.send(response)
         await asyncio.sleep(5)
         await msg.delete()  # Delete bot's message
-
-
-@bot.command()
-async def ping(ctx):
-    await ctx.channel.send("Pong!")
 
 bot.run(api_key_bot)
