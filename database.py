@@ -36,6 +36,42 @@ class DatabaseQuery:
                 FOREIGN KEY (club_id) REFERENCES clubs (club_id)
             )
         ''')
+
+        # Create the 'discord_users' table
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS discord_users (
+                user_id INTEGER,
+                club_id TEXT,
+                FOREIGN KEY (club_id) REFERENCES clubs (club_id)
+            )
+        ''')
+        self.conn.commit()
+
+    def register_discord_user(self, user_id, club_id):
+        self.cursor.execute('''
+            INSERT INTO discord_users (user_id, club_id)
+            VALUES (?, ?)
+        ''', (user_id, club_id))
+        self.conn.commit()
+
+    def get_discord_user_club(self, user_id):
+        # Check if the club already exists in the clubs table
+        self.cursor.execute('''
+            SELECT club_id
+            FROM discord_users
+            WHERE user_id = ?
+        ''', (user_id,))
+
+        user_club = self.cursor.fetchone()
+        return user_club
+
+    def udate_discord_user_club(self, user_id, club_id):
+        self.cursor.execute('''
+            UPDATE discord_users
+            SET club_id = ?
+            WHERE user_id = ?
+        ''', (club_id, user_id))
+
         self.conn.commit()
 
     def is_club_in_database(self, club_id):
